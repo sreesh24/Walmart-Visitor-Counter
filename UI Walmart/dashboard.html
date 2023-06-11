@@ -1,0 +1,280 @@
+
+<html>
+    <head>
+        <!-- Bootstrap CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+        <!-- Chart JS -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+        <title>Admin Dashboard</title>
+    </head>
+    <body onload="loadDashboardData()">
+        <div class="container">
+            <h1>Admin Dashboard</h1>
+
+            <br>
+
+            <!-- Grid View  -->
+            <div class="row">
+                <div class="col-3">
+
+                    <!-- Card Start -->
+                    <div class="card" style="background-color: rgb(217, 18, 18);">
+                        <div class="card-body">
+                            <h3 class="card-title" style="color: white;">Visitors For Day</h3>
+                            <h5 class="card-title" style="color: white;" id="visitorsDay"></h5>
+                        </div>
+                    </div>
+                    <!-- Card End -->
+
+                </div>
+                <div class="col-3">
+
+                    <!-- Card Start -->
+                    <div class="card" style="background-color: rgb(18, 64, 215);">
+                        <div class="card-body">
+                            <h3 class="card-title" style="color: white;">Total Visitors</h3>
+                            <h5 class="card-title" style="color: white;" id="totalVisitors"></h5>
+                        </div>
+                    </div>
+                    <!-- Card End -->
+
+                </div>
+                <div class="col-3">
+
+                    <!-- Card Start -->
+                    <div class="card" style="background-color: rgb(240, 255, 37);">
+                        <div class="card-body">
+                            <h3 class="card-title">Male Visitors</h3>
+                            <h5 class="card-title" id="maleVisitors"></h5>
+                        </div>
+                    </div>
+                    <!-- Card End -->
+
+                </div>
+                <div class="col-3">
+
+                    <!-- Card Start -->
+                    <div class="card" style="background-color: rgb(34, 186, 20);">
+                        <div class="card-body">
+                            <h3 class="card-title" style="color: white;">Female Visitors</h3>
+                            <h5 class="card-title" style="color: white;" id="femaleVisitors"></h5>
+                        </div>
+                    </div>
+                    <!-- Card End -->
+
+                </div>
+            </div>
+            <!-- Grid View End -->
+
+            <br>
+
+            <!--  Grid View - Statistics Table & Bar Graph -->
+            <div class="row">
+
+                <!-- Table -->
+                <div class="col-6">
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>Sl</td>
+                                <td>Age Group</td>
+                                <td>Vistors (Day)</td>
+                                <td>Overall Visitors</td>
+                            </tr>
+                        </thead>
+                        <tbody id="tableData">
+                        </tbody>
+                    </table>
+
+                </div>
+                <!-- Table End -->
+
+                <!-- Bar Graph -->
+                <div class="col-6">
+                    <br>
+                    <div>
+                        <canvas id="myChart"></canvas>
+                    </div>                      
+                </div>
+                <!-- Bar Graph End -->
+            </div>
+            <!--  Grid View - Statistics Table & Bar Graph End -->
+
+        </div>
+        
+        <script>
+                function loadDashboardData()
+                {
+                    /* Visitors for the Day */
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200)     
+                        {   
+                            var jsonData = JSON.parse(this.responseText)
+                            var todayVisitorsData = jsonData[0].today_visitors
+
+                            document.getElementById("visitorsDay").innerHTML = todayVisitorsData;
+                        }
+                    };
+                    xhttp.open("GET", "http://localhost:5000/today-visitors", true);
+                    xhttp.send();
+                    /* Visitors for the Day End  */
+
+                    /* Total Visitors for the Day */
+                    var xhttpTotalVisitors = new XMLHttpRequest();
+                    xhttpTotalVisitors.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200)     
+                        {   
+                            var jsonData = JSON.parse(this.responseText)
+                            var todayVisitorsData = jsonData[0].overall_visitors
+
+                            document.getElementById("totalVisitors").innerHTML = todayVisitorsData;
+                        }
+                    };
+                    xhttpTotalVisitors.open("GET", "http://localhost:5000/overall-visitors", true);
+                    xhttpTotalVisitors.send();
+                    /* Total Visitors for the Day End  */
+
+                    /* Total Male Vistors */
+                    var xhttpMaleVisitors = new XMLHttpRequest();
+                    xhttpMaleVisitors.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200)     
+                        {   
+                            var jsonData = JSON.parse(this.responseText)
+                            var maleVisitorsData = jsonData[0].male_visitors
+
+                            document.getElementById("maleVisitors").innerHTML = maleVisitorsData;
+                        }
+                    };
+                    xhttpMaleVisitors.open("GET", "http://localhost:5000/male-visitors", true);
+                    xhttpMaleVisitors.send();
+                    /* Total Male Visitors */ 
+                    
+                    /* Total Female Vistors */
+                    var xhttpFemaleVisitors = new XMLHttpRequest();
+                    xhttpFemaleVisitors.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200)     
+                        {   
+                            var jsonData = JSON.parse(this.responseText)
+                            var femaleVisitorsData = jsonData[0].female_visitors
+
+                            document.getElementById("femaleVisitors").innerHTML = femaleVisitorsData;
+                        }
+                    };
+                    xhttpFemaleVisitors.open("GET", "http://localhost:5000/female-visitors", true);
+                    xhttpFemaleVisitors.send();
+                    /* Total Female Visitors */ 
+
+                    /* Table Data Start */
+                    var xhttpDashboard = new XMLHttpRequest();
+                    xhttpDashboard.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200)     
+                        {   
+                            var jsonData = JSON.parse(this.responseText)
+                            var jsonDataLength = jsonData.length; 
+
+                            var tableData = '';
+                            var sl = 0;
+
+                            for(var i = 0;i < jsonDataLength;i++)
+                            {   
+                                sl++;
+                                tableData+= '<tr>';
+                                tableData+= '<td>'+sl+'</td>';
+                                tableData+= '<td>'+jsonData[i].gender+'-'+jsonData[i].age+'</td>';
+                                tableData+= '<td>'+jsonData[i].todayAgeClassification+'</td>';
+                                tableData+= '<td>'+jsonData[i].overallAgeClassification+'</td>';
+                                tableData+= '<tr>';
+                            }
+                            
+                            document.getElementById("tableData").innerHTML = tableData;
+                        }
+                    };
+                    xhttpDashboard.open("GET", "http://localhost:5000/age-group-classification", true);
+                    xhttpDashboard.send();
+                    /* Table Data End  */
+
+
+                    /* Bar Chart Start */
+                    var xhttpBarChart = new XMLHttpRequest();
+                    xhttpBarChart.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200)     
+                        {   
+                            var jsonData = JSON.parse(this.responseText)
+                           
+                            var monthArr = [];
+                            var jsonDataLength = jsonData.length;
+
+                            for(var j = 0;j < jsonDataLength;j++)
+                            {
+                                if(jsonData[j].month != 'None')
+                                {
+                                    monthArr.push(jsonData[j].month);
+                                }
+                                else
+                                {
+                                    monthArr.push('0')
+                                }
+                            }
+
+                             /* Graph Goes Here */
+                        const data = {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+            datasets: [{
+                label: 'Walmart Visitor Trends',
+                data: monthArr
+                ,
+                backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+            }]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                    }
+                },
+                };
+
+            const myChart = new Chart(
+                document.getElementById('myChart'),
+                config
+            );
+
+                            
+                        }
+                    };
+                    xhttpBarChart.open("GET", "http://localhost:5000/bargraph", true);
+                    xhttpBarChart.send();
+                    /* Bar Chart End */
+                }
+        </script>
+
+    </body>
+</html>
